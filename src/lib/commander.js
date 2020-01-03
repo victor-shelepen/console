@@ -6,8 +6,9 @@ function registerCommand(locator, cmd) {
   locator.push(cmd)
 }
 
-async function executeCommand(locator, cmd) {
+function executeCommand(locator, cmd) {
   const command = locator.find((c) => c.name === cmd.name && c.group === cmd.group)
+
   return command.handler(cmd)
 }
 

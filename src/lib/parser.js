@@ -59,7 +59,7 @@ function tokensToCommand (_tokens) {
 }
 
 function parseCommand (token) {
-  if (!token.match(/^[\w,\.,]+$/g)) {
+  if (!token.match(/^[\w,.,]+$/g)) {
     throw new Error(`Command does not match to the command pattern - '${token}'.`)
   }
   const commandParts = token.split('.')

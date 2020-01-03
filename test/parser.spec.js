@@ -74,7 +74,7 @@ describe('CLI parser testing', () => {
     it('It is not an argument token', () => {
       assert.throws(
         () => {
-          const token = parserLib.parseArgument('format=A4')
+          parserLib.parseArgument('format=A4')
         },
         'Error: It is not an argument token'
       )
