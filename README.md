@@ -10,4 +10,12 @@ It manages console commands. It uses own string parser that can be used independ
 ```
 --longArg1="arg1" -shortArg="arg1" -flag command value1 valuen
 ```
+### Conventions
+* Tokens can be disordered. They are ordered this way - arguments first, than command tokens.
+* Tokens are separated into arguments and command name with values.
+* Command name is the first, others are values of the command.
+* Attention. Wrap values into double brackets.
 
+##Contribution
+You are free to make your contribution and help the library to be better. Follow on [Contribution](./CONTRIBUTION.md)
+and make your piece. 
