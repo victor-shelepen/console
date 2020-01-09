@@ -1,3 +1,11 @@
+function lineCycler (handler, { input=process.stdin, output=process.stdout }) {
+  const rl = readline.createInterface({ input, output})
+
+  rl.on('line', (input) => {
+    handler(line, rl)
+  })
+}
+
 function initCommandLocator() {
   return []
 }
