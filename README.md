@@ -113,6 +113,6 @@ rl.on('line', async (input) => {
 ```
 For a workable example look at [mfd.js](./example/mfd.js)
 
-##Contribution
+## Contribution
 You are free to make your contribution and help the library to be better. Follow on [contribution](./CONTRIBUTION.md)
 and make your piece. 
