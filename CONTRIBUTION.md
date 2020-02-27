@@ -12,5 +12,16 @@ npm run lint-fix
 ```
 Make a public request on Github.
 
+## Example usage
+### String parser
+```
+node ./example/parser.js 
+```
+### Console command manager
+```
+node ./example/mfd.js 
+```
+
 ## Advises
+* Investigate and improve the library using example
 * Follow on TDD approach.
