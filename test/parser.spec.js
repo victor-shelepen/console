@@ -53,7 +53,7 @@ describe('CLI parser testing', () => {
 
     it('Common', () => {
       const tokens = parserLib.stringToTokens(' --format=A4    --orientation="a l b u m" printer.print  ')
-      assert.equal(tokens[1], `--orientation=a#2909;l#2909;b#2909;u#2909;m`)
+      assert.equal(tokens[1], `--orientation=a${secretSpace}l${secretSpace}b${secretSpace}u${secretSpace}m`)
     })
   })
 
