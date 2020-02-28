@@ -1,7 +1,12 @@
 const assert = require('assert')
-const commanderLib = require('../src/lib/commander')
+const { Manager } = require('../src/manager')
 
 describe('CLI commander testing', () => {
+  let manager
+  const injection = {
+    time: 'timeString'
+  }
+
   const commands = [
     {
       name: 'print',
@@ -18,8 +23,8 @@ describe('CLI commander testing', () => {
           description: 'Paper orientation.'
         }
       ],
-      handler: (command) => {
-        return Promise.resolve(command.name + ' has been processed.')
+      handler: ({command, injection}) => {
+        return Promise.resolve(`${command.name} has been processed. injector - ${injection.time}`)
       }
     },
     {
@@ -32,22 +37,34 @@ describe('CLI commander testing', () => {
         }
       ]
     }
-  ];
-  const locator = commanderLib.register(commands)
+  ]
 
-  it('test', () => {
-    assert.equal(1, 1)
+  before(() => {
+    manager = new Manager(commands, injection)
+  })
+
+  it('Get', () => {
+    const request = {
+      name: 'print',
+      group: 'MFP'
+    }
+    const command =  manager.get(request)
+    assert.equal(command.name, request.name)
   })
 
   it('Prints command list', () => {
-    const outPut = commanderLib.printCommands(locator);
+    const outPut = manager.toString()
     const etalon = 'print - Letter print command.\ndraw'
     assert.equal(outPut, etalon)
   })
 
   it('Prints full description of a command', () => {
-    const outPut = commanderLib.printCommand(locator[0]);
-    console.log(outPut);
+    const request = {
+      name: 'print',
+      group: 'MFP'
+    }
+    const command =  manager.get(request)
+    const outPut = manager.commandToString(command);
     const etalon = 'print - Letter print command.\n' +
       'This is a command of the printer that allows to print something on a sheet.\n' +
       '\t--format - The format of a printing letter.\n' +
@@ -56,7 +73,7 @@ describe('CLI commander testing', () => {
   })
 
   it('Executes the command', async () => {
-    const command = {
+    const request = {
       name: 'print',
       group: 'MFP',
       args: [
@@ -67,8 +84,8 @@ describe('CLI commander testing', () => {
         }
       ]
     }
-    const result = await commanderLib.executeCommand(locator, command)
-    const etalon = 'print has been processed.'
+    const result = await manager.execute(request)
+    const etalon = 'print has been processed. injector - timeString'
     assert.equal(result, etalon)
   })
 })

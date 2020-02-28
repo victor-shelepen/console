@@ -1,5 +1,5 @@
 const assert = require('assert')
-const parserLib = require('../src/lib/parser')
+const parserLib = require('../src/parser')
 
 describe('CLI parser testing', () => {
   describe('Extract value', () => {

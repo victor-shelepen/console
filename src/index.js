@@ -1,9 +1,8 @@
-const parserLib = require('./lib/parser');
-const commanderLib = require('./lib/commander');
+const { extractValue, parse } = require('./parser');
+const { Manager } = require('./manager')
 
 module.exports = {
-  extractValue: parserLib.extractValue,
-  parse: parserLib.parse,
-  register: commanderLib.register,
-  executeCommand: commanderLib.executeCommand
+  extractValue,
+  parse,
+  Manager
 }
