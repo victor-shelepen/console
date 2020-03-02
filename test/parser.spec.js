@@ -1,5 +1,6 @@
 const assert = require('assert')
 const parserLib = require('../src/lib/parser')
+const { secretSpace, replaceSpacesInBrackets } = parserLib
 
 describe('CLI parser testing', () => {
   describe('Extract value', () => {
@@ -35,14 +36,24 @@ describe('CLI parser testing', () => {
   })
 
   describe('String to tokens', () => {
+    it('Replace spaces in brackets.', () => {
+      const string = replaceSpacesInBrackets(`a "b c" a ' d ' a`)
+      assert.equal(string, 'a b#2909;c a #2909;d#2909; a')
+    })
+
     it('Without arguments', () => {
       const tokens = parserLib.stringToTokens('printer.print')
       assert.equal(tokens[0], 'printer.print')
     })
 
+    it('Common without brackets with shielded spaces.', () => {
+      const tokens = parserLib.stringToTokens(' --format=A4    --orientation=a\\ l\\ b\\ u\\ m printer.print  ')
+      assert.equal(tokens[1], `--orientation=a${secretSpace}l${secretSpace}b${secretSpace}u${secretSpace}m`)
+    })
+
     it('Common', () => {
       const tokens = parserLib.stringToTokens(' --format=A4    --orientation="a l b u m" printer.print  ')
-      assert.equal(tokens[1], `--orientation${parserLib.secretEqual}a l b u m`)
+      assert.equal(tokens[1], `--orientation=a${secretSpace}l${secretSpace}b${secretSpace}u${secretSpace}m`)
     })
   })
 
@@ -71,6 +82,11 @@ describe('CLI parser testing', () => {
   })
 
   describe('Argument parsing', () => {
+    it('Fault case A - equal in argument value', () => {
+      const token = parserLib.parseArgument(`--format==A4`)
+      assert.equal('=A4', token.value)
+    })
+
     it('It is not an argument token', () => {
       assert.throws(
         () => {
@@ -81,9 +97,8 @@ describe('CLI parser testing', () => {
     })
 
     it('Common format', () => {
-      const token = parserLib.parseArgument(`--format${parserLib.secretEqual}=A4`)
+      const token = parserLib.parseArgument(`--format=A4`)
       assert.equal('format', token.key)
-      assert.equal('=A4', token.value)
       assert.equal(false, token.short)
     })
 
@@ -96,30 +111,30 @@ describe('CLI parser testing', () => {
   })
 
   it('Tokens to command', () => {
-    const command = parserLib.tokensToCommand([`--format${parserLib.secretEqual}=A4`, '--once', 'printer.print'])
+    const command = parserLib.tokensToCommand([`--format=A4`, '--once', 'printer.print'])
     const arg = command.args[0]
     assert.equal('format', arg.key)
-    assert.equal('=A4', arg.value)
+    assert.equal('A4', arg.value)
     assert.equal('print', command.name)
     assert.equal(2, command.args.length)
   })
 
   it('Parse with values', () => {
-    const command = parserLib.parse('  --format="=A4" --once    printer.print  val1 val2')
+    const command = parserLib.parse('  --format=A4 --once    printer.print  val1 val2')
     assert.equal(command.values[0], 'val1')
     assert.equal(command.values[1], 'val2')
     const arg = command.args[0]
     assert.equal('format', arg.key)
-    assert.equal('=A4', arg.value)
+    assert.equal('A4', arg.value)
     assert.equal('print', command.name)
     assert.equal(2, command.args.length)
   })
 
   it('Parse mixed ', () => {
-    const command = parserLib.parse('--format="=A4" printer.print 2 --once val1')
+    const command = parserLib.parse('--format=A4 printer.print 2 --once val1')
     const arg = command.args[0]
     assert.equal('format', arg.key)
-    assert.equal('=A4', arg.value)
+    assert.equal('A4', arg.value)
     assert.equal('print', command.name)
     assert.equal(2, command.args.length)
   })
