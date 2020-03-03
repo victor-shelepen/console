@@ -1,5 +1,5 @@
 const assert = require('assert')
-const parserLib = require('../src/lib/parser')
+const parserLib = require('../src/parser')
 const { secretSpace, replaceSpacesInBrackets } = parserLib
 
 describe('CLI parser testing', () => {

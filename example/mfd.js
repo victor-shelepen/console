@@ -1,6 +1,6 @@
 (async function() {
   // const ccm = require('console-command-manager')
-  const ccm = require('../src/index')
+  const { Manager, parse } = require('../src/index')
   const readline = require('readline')
 
   // Command definitions.
@@ -35,17 +35,21 @@
           description: 'Paper orientation.'
         }
       ],
-      handler: (command) => {
-        console.dir(command)
-        console.log(command.name + ' has been processed.')
+      handler: ({ command, request, injection: { DateFactory } }) => {
+        console.dir(command, request)
+        console.log(`${command.name} has been processed. ${DateFactory.now()}`)
 
         return Promise.resolve(true)
       }
     }
   ]
 
+  const injection = {
+    DateFactory: Date
+  }
+
   // Registers commands.
-  const locator = ccm.register(commands)
+  const manager = new Manager(commands, injection)
 
   // Readline streams.
   const rl = readline.createInterface({
@@ -55,8 +59,8 @@
 
   rl.on('line', async (input) => {
     // Cycled command processing.
-    const command = ccm.parse(input)
-    const toContinue = await ccm.executeCommand(locator, command)
+    const command = parse(input)
+    const toContinue = await manager.execute(command)
 
     // If termination signal is received the readline stream is closed. The application is closed.
     if (!toContinue) {
