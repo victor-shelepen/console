@@ -1,35 +1,36 @@
-const secretEqual = '#2909;'
+const BRACKETS = ['"', '\'']
+const secretSpace = '#2909;'
 
-function stringToTokens (string) {
-  string += ' '
-  const tokens = []
-  let pass = false
+function replaceSpacesInBrackets(string) {
+  let openChar
+  let chunks = []
   let chunk = []
   for (let char of string) {
-    if (char === '"') {
-      pass = !pass
+    if (!openChar && BRACKETS.indexOf(char) != -1) {
+      openChar = char
       continue
     }
-
-    if (!pass) {
-      if (char === '=') {
-        char = secretEqual
-      }
+    if(openChar == char) {
+      openChar = undefined
+      chunks.push(chunk.join())
+      chunk = []
+      continue
+    }
+    if (openChar && char == ' ') {
+      char = secretSpace
     }
 
-    if (char === ' ' && !pass) {
-      if (chunk.length > 0) {
-        tokens.push(chunk.join(''))
-        chunk = []
-      } else {
-        // Noop.
-      }
-    } else {
-      chunk.push(char)
-    }
+    chunks.push(char)
   }
 
-  return tokens
+  return chunks.join('')
+}
+
+function stringToTokens (string) {
+  return replaceSpacesInBrackets(string)
+    .replace(/\\ /gi, secretSpace)
+    .split(' ')
+    .filter(v => v != '')
 }
 
 function tokensToCommand (_tokens) {
@@ -86,7 +87,22 @@ function parseArgument (token) {
   } else {
     throw new Error('It is not an argument token.')
   }
-  const [key, value = true] = token.split(secretEqual, 2)
+  const equalPos = token.indexOf('=')
+  let key
+  let value = true
+  if (equalPos != -1) {
+    key = token.substr(0, equalPos)
+    value = token.substr(equalPos + 1).trim()
+
+    // Trim brackets.
+    if (value > 1 && value[0] == value[value.length - 1] && BRACKETS.indexOf(value[0]) != -1) {
+      value = value.substr(1, value.length - 2)
+    }
+  }
+  else {
+    key = token
+    value = true
+  }
 
   return {
     key,
@@ -114,11 +130,12 @@ function parse (str) {
 }
 
 module.exports = {
+  secretSpace,
+  replaceSpacesInBrackets,
   stringToTokens,
   tokensToCommand,
   extractValue,
   parseCommand,
   parseArgument,
-  parse,
-  secretEqual
+  parse
 }
