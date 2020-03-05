@@ -1,5 +1,5 @@
 (async function() {
-  // const ccm = require('console-command-manager')
+  // const { Manager, parse } = require('console-command-manager')
   const { Manager, parse } = require('../src/index')
   const readline = require('readline')
 

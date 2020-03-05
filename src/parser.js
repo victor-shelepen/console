@@ -1,6 +1,12 @@
 const BRACKETS = ['"', '\'']
 const secretSpace = '#2909;'
 
+function replaceSecretSpaces(string) {
+  const expression = new RegExp(secretSpace, 'g')
+
+  return string.replace(expression, ' ')
+}
+
 function replaceSpacesInBrackets(string) {
   let openChar
   let chunks = []
@@ -48,7 +54,7 @@ function tokensToCommand (_tokens) {
     throw new Error('There is not a command.')
   }
   const commandToken = commandTokens.shift()
-  const values = commandTokens
+  const values = commandTokens.map(replaceSecretSpaces)
   const command = parseCommand(commandToken)
   const args = argTokens.map(parseArgument)
 
@@ -104,6 +110,8 @@ function parseArgument (token) {
     value = true
   }
 
+  value = value instanceof String ? replaceSecretSpaces(value) : value
+
   return {
     key,
     value,
@@ -132,6 +140,7 @@ function parse (str) {
 module.exports = {
   secretSpace,
   replaceSpacesInBrackets,
+  replaceSecretSpaces,
   stringToTokens,
   tokensToCommand,
   extractValue,
