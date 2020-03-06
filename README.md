@@ -47,6 +47,30 @@ It produces the following output.
 For a workable example look at [parser.js](./example/parser.js)
 
 ## Console command manager implementation
+```
+(async function() {
+  const { runCLI } = require('../src/cli')
+
+  runCLI('Hello!', [
+    {
+      name: 'print',
+      group: 'default',
+      title: 'Prints values',
+      handler: async ({request, injection: { console, DateFactory } }) => {
+        console.log(`I am printing you - ${request.values.join(' --> ')} -  now at ${new DateFactory()}`)
+
+        return true
+      }
+    },
+  ],
+    {
+      DateFactory: Date
+    })
+})()
+```
+For a workable example look at [parser.js](./example/boiler-plate.js)
+
+## Higher level decoupled version.
 Define dependencies.
 ```
 const { Manager, parse } = require('console-command-manager')

@@ -4,10 +4,10 @@ class Manager {
     this.injection = injection
   }
 
-  execute(request) {
+  async execute(request) {
     const command = this.get(request)
 
-    return command.handler({command, request, injection: this.injection})
+    return command.handler({command, request, injection: this.injection, manager: this})
   }
 
   get(request) {
@@ -25,7 +25,7 @@ class Manager {
     let output = command.name
       + (command.title ? ` - ${command.title}`: '')
       + (command.description ? `\n${command.description}` : '');
-    if (command.arguments.length > 0) {
+    if (command.arguments && command.arguments.length > 0) {
       output += '\n' + command.arguments.map(a => `\t${a.key} - ${a.description}`).join('\n');
     }
 
