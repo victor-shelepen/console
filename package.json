@@ -1,6 +1,6 @@
 {
   "name": "console-command-manager",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Console command manager.",
   "main": "src/index.js",
   "types": "dts/index.d.ts",

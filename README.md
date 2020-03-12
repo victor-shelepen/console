@@ -23,7 +23,7 @@ values. Arguments can be mixed with values. It does not affect to.
 ```
 
 ## It parses a command string
-```
+```javascript
 const { parse } = require('console-command-manager')
 
 const inputString = '--longArg1="arg1" -shortArg="arg1" -flag command value1 valuen'
@@ -31,7 +31,7 @@ const command = parse(inputString)
 console.dir(command)
 ```
 It produces the following output.
-```
+```javascript
 {
   token: 'command',
   name: 'command',
@@ -47,7 +47,7 @@ It produces the following output.
 For a workable example look at [parser.js](./example/parser.js)
 
 ## Console command manager implementation
-```
+```javascript
 (async function() {
   const { runCLI } = require('../src/cli')
 
@@ -72,12 +72,12 @@ For a workable example look at [parser.js](./example/boiler-plate.js)
 
 ## Higher level decoupled version.
 Define dependencies.
-```
+```javascript
 const { Manager, parse } = require('console-command-manager')
 const readline = require('readline')
 ```
 Define commands.
-```
+```javascript
   const commands = [
 
     // Exit command.
@@ -119,21 +119,21 @@ Define commands.
   ]
 ```
 Define injection.
-```
+```javascript
 const injection = {
   DateFactory: Date
 }
 ```
 
 Register commands
-```
+```javascript
 // Registers commands.
 const manager = new Manager(commands, injection)
 ```
 
 
 Implement the command loop.
-```
+```javascript
   // Registers commands.
   const manager = new Manager(commands, injection)
 
