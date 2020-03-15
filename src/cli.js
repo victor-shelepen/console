@@ -97,6 +97,27 @@ function runCLI(greetings, _commands,   injection=null, readLine=null) {
   return cli
 }
 
+function runCommand(_commands, injection=null, args) {
+    const _injection = {
+        console
+    }
+    const allCommands = [
+        ...commands,
+        ..._commands
+    ]
+    if (injection) {
+        injection = {
+            ..._injection,
+            ...injection
+        }
+    } else {
+        injection = _injection
+    }
+    const manager = new Manager(allCommands, injection)
+    const tokens = args
+    const command = tokensToCommand(tokens)
+}
+
 module.exports = {
   commands,
   runCLI,

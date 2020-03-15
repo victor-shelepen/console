@@ -2,8 +2,8 @@
 [![Build Status](https://travis-ci.org/vlikin/console.svg?branch=master)](https://travis-ci.org/vlikin/console)
 [![Coverage Status](https://coveralls.io/repos/github/vlikin/console/badge.svg?branch=master)](https://coveralls.io/github/vlikin/console?branch=master)
 
-[![NPM](https://nodei.co/npm/console.png?downloads=true&downloadRank=true)](https://nodei.co/npm/console/)
-[![NPM](https://nodei.co/npm-dl/console.png?months=9&height=3)](https://nodei.co/npm/console/)
+[![NPM](https://nodei.co/npm/console-command-manager.png?downloads=true&downloadRank=true)](https://nodei.co/npm/console-command-manager/)
+[![NPM](https://nodei.co/npm-dl/console-command-manager.png?months=9&height=3)](https://nodei.co/npm/console-command-manager/)
 
 It helps run to custom commands from bash, is able to control your service from console like the think client does.
 Main parts of the project:
