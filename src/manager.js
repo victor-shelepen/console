@@ -1,6 +1,6 @@
 class Manager {
   constructor(commands, injection) {
-    this.commands = commands
+    this.setCommands(commands)
     this.injection = injection
   }
 
@@ -10,9 +10,19 @@ class Manager {
     return command.handler({command, request, injection: this.injection, manager: this})
   }
 
-  get(request) {
+  setCommands(commands) {
+    commands.forEach((command) => {
+      if (!command.group) {
+        command.group = 'default'
+      }
+    })
+
+    this.commands = commands
+  }
+
+  get({name, group='default'}) {
     return this.commands
-      .find((c) => c.name === request.name && c.group === request.group)
+      .find((c) => c.name === name && c.group === group)
   }
 
   toString() {

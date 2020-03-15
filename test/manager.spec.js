@@ -36,11 +36,24 @@ describe('CLI commander testing', () => {
           description: 'A type of ink.'
         }
       ]
+    },
+    {
+      name: 'command',
+      handler: () => Promise.resolve(true)
     }
   ]
 
   before(() => {
     manager = new Manager(commands, injection)
+  })
+
+  it('Default group without definition.', () => {
+    const request = {
+      name: 'command',
+    }
+    const command =  manager.get(request)
+    assert.equal(command.name, request.name)
+    assert.equal(command.group, 'default')
   })
 
   it('Get', () => {
@@ -54,7 +67,7 @@ describe('CLI commander testing', () => {
 
   it('Prints command list', () => {
     const outPut = manager.toString()
-    const etalon = 'print - Letter print command.\ndraw'
+    const etalon = 'print - Letter print command.\ndraw\ncommand'
     assert.equal(outPut, etalon)
   })
 
