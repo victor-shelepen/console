@@ -1,9 +1,19 @@
 {
   "name": "console-command-manager",
   "version": "0.0.5",
-  "description": "Console command manager.",
+  "description": "Console command manager. It helps run custom commands from bash, is able to control your service from console like the think client does. String parser command manager and console runner are main parts of the project.",
   "main": "src/index.js",
   "types": "dts/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vlikin/console"
+  },
+  "keywords": [
+    "bash",
+    "shell",
+    "console",
+    "script"
+  ],
   "scripts": {
     "lint": "eslint src/**/*.js test/**/*.js",
     "lint-fix": "eslint --fix src/**/*.js test/**/*.js",
