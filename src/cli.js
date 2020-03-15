@@ -1,51 +1,49 @@
 const { parse, parseCommand } = require('./parser')
 const { Manager } = require('./manager')
 const readline = require('readline')
+const EventEmmiter = require('events')
+const EVENTS = {
+  commandExecuted: 'commandExecuted'
+}
 
 const commands = [
   // List commands.
   {
     name: 'list',
-    group: 'default', // @todo refactore...
     title: 'Lists commands available.',
-    handler: async ({ manager, injection: { console } }) => {
+    handler: ({ manager, injection: { console } }) => {
       const output = 'Available commands:\n\n' + manager.toString()
       console.log(output)
-
-      return true
     }
   },
 
   {
     name: 'show',
-    group: 'default', // @todo refactore...
     title: 'Describes the command.',
-    handler: async ({ manager, request, injection: { console } }) => {
+    handler: ({ manager, request, injection: { console } }) => {
       const commandRequest = parseCommand(request.values[0])
       const command = manager.get(commandRequest)
       const commandString = manager.commandToString(command)
       console.log(commandString)
-
-      return true
     }
   },
 
   // Exit command.
   {
     name: 'exit',
-    group: 'default', // @todo refactore...
     title: 'It terminates the application.',
     handler: ({ injection: { console } }) => {
       console.log('See you.')
 
       // To break the input cycle return false.
-      return Promise.resolve(false)
+      return false
     }
   }
 ]
 
 class CLI {
   constructor(manager, readline, greetings) {
+    this.events = new EventEmmiter()
     this.manager = manager
     this.readline = readline
     this.greetings = greetings
@@ -55,10 +53,15 @@ class CLI {
   async onLine (input) {
     // Cycled command processing.
     const command = parse(input)
-    const toContinue = await this.manager.execute(command)
+    const resolver = this.manager.execute(command)
+    let toContinue
+    if (resolver instanceof Promise) {
+      toContinue = await resolver;
+    }
+    this.events.emit(EVENTS.commandExecuted, command)
 
     // If termination signal is received the readline stream is closed. The application is closed.
-    if (!toContinue) {
+    if (toContinue === false) {
      this.readline.close()
     }
   }
@@ -96,5 +99,6 @@ function runCLI(greetings, _commands,   injection=null, readLine=null) {
 
 module.exports = {
   commands,
-  runCLI
+  runCLI,
+  EVENTS
 }

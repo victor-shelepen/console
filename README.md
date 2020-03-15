@@ -5,6 +5,9 @@
 [![NPM](https://nodei.co/npm/console.png?downloads=true&downloadRank=true)](https://nodei.co/npm/console/)
 [![NPM](https://nodei.co/npm-dl/console.png?months=9&height=3)](https://nodei.co/npm/console/)
 
+Console command manager.
+It helps run custom commands from bash, is able to control your service from console like the think client does.
+String parser command manager and console runner are main parts of the project.
 It manages console commands. It uses own string parser that can be used independently.
 ## Command pattern.
 ```

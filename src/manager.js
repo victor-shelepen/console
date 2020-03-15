@@ -4,7 +4,7 @@ class Manager {
     this.injection = injection
   }
 
-  async execute(request) {
+  execute(request) {
     const command = this.get(request)
 
     return command.handler({command, request, injection: this.injection, manager: this})

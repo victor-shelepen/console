@@ -1,9 +1,9 @@
 const assert = require('assert')
-const { runCLI } = require('../src/cli')
+const { runCLI, EVENTS } = require('../src/cli')
 const EventEmitter = require('events')
 
 describe('CLI', () => {
-  let readline, _console
+  let readline, _console, cli
 
   before(() => {
     readline = new EventEmitter()
@@ -16,8 +16,23 @@ describe('CLI', () => {
         this.objects.push(object)
       }
     }
+    const commands = [
+      {
+        name: 'async',
+        title: 'Async example.',
+        handler: async ({ injection: { console } }) => {
+          const promise = new Promise((resolve) => {
+            setTimeout(() => {
+              resolve('Async test.')
+            }, 0)
+          })
 
-    runCLI('Greetings.', [], {
+          const output = await promise
+          console.log(output)
+        }
+      },
+    ]
+    cli = runCLI('Greetings.', commands, {
       console: _console
     }, readline)
   })
@@ -35,7 +50,8 @@ describe('CLI', () => {
         '\n' +
         'list - Lists commands available.\n' +
         'show - Describes the command.\n' +
-        'exit - It terminates the application.';
+        'exit - It terminates the application.\n' +
+        'async - Async example.';
       assert.equal(lines, etalon)
     })
 
@@ -44,6 +60,18 @@ describe('CLI', () => {
       const lines = _console.objects.pop()
       const etalon = 'show - Describes the command.'
       assert.equal(lines, etalon)
+    })
+
+    it('Async', (done) => {
+      readline.emit('line', 'async')
+      cli.events.once(EVENTS.commandExecuted, () => {
+        const etalon = 'Async test.'
+        const lines = _console.objects.pop()
+        assert.equal(lines, etalon)
+        done()
+      })
+      const lines = _console.objects.pop()
+      assert.equal(undefined, lines)
     })
 
     it('Exit', () => {
