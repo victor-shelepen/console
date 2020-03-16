@@ -15,6 +15,6 @@
     {
       DateFactory: Date
     },
-    process.argv
+    process.argv.slice(2)
   )
-})
+})()

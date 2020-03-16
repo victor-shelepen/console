@@ -93,7 +93,7 @@ function runCLI(greetings, _commands, injection = null, readLine = null) {
   return cli
 }
 
-function runCommand(_commands, injection = null, args) {
+function runCommand(_commands, injection = null, tokens) {
   const _injection = {
     console
   }
@@ -110,8 +110,6 @@ function runCommand(_commands, injection = null, args) {
     injection = _injection
   }
   const manager = new Manager(allCommands, injection)
-  const tokens = args
-  console.log(tokens)
   const request = tokensToCommand(tokens)
 
   return manager.execute(request)

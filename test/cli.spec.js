@@ -1,6 +1,31 @@
 const assert = require('assert')
-const { runCLI, EVENTS } = require('../src/cli')
+const { runCLI, EVENTS, runCommand } = require('../src/cli')
 const EventEmitter = require('events')
+const { _console } = require('./helper')
+
+describe('Commander', () => {
+  it('Run commander', async () => {
+    await runCommand(
+      [
+        {
+          name: 'print',
+          title: 'Prints values',
+          handler: async ({ injection: { console } }) => {
+            console.log('Run commander testing.')
+
+            return true
+          }
+        },
+      ],
+      {
+        console: _console
+      },
+      ['print']
+    )
+    const line = _console.objects.pop()
+    assert.equal(line, 'Run commander testing.')
+  })
+})
 
 describe('CLI', () => {
   let readline, _console, cli
@@ -9,12 +34,6 @@ describe('CLI', () => {
     readline = new EventEmitter()
     readline.close = function() {
       this.isClosed = true
-    }
-    _console = {
-      objects: [],
-      log: function(object) {
-        this.objects.push(object)
-      }
     }
     const commands = [
       {
