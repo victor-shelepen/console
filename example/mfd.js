@@ -9,7 +9,6 @@
     // Exit command.
     {
       name: 'exit',
-      group: 'default', // @todo refactore...
       title: 'It terminates the application.',
       handler: () => {
         console.log('See you.')

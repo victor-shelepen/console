@@ -1,5 +1,5 @@
-const { parse, parseCommand } = require('./parser')
-const { Manager } = require('./manager')
+const {parse, parseCommand, tokensToCommand} = require('./parser')
+const {Manager} = require('./manager')
 const readline = require('readline')
 const EventEmmiter = require('events')
 const EVENTS = {
@@ -11,7 +11,7 @@ const commands = [
   {
     name: 'list',
     title: 'Lists commands available.',
-    handler: ({ manager, injection: { console } }) => {
+    handler: ({manager, injection: {console}}) => {
       const output = 'Available commands:\n\n' + manager.toString()
       console.log(output)
     }
@@ -20,7 +20,7 @@ const commands = [
   {
     name: 'show',
     title: 'Describes the command.',
-    handler: ({ manager, request, injection: { console } }) => {
+    handler: ({manager, request, injection: {console}}) => {
       const commandRequest = parseCommand(request.values[0])
       const command = manager.get(commandRequest)
       const commandString = manager.commandToString(command)
@@ -32,7 +32,7 @@ const commands = [
   {
     name: 'exit',
     title: 'It terminates the application.',
-    handler: ({ injection: { console } }) => {
+    handler: ({injection: {console}}) => {
       console.log('See you.')
 
       // To break the input cycle return false.
@@ -50,24 +50,20 @@ class CLI {
     this.readline.on('line', this.onLine.bind(this))
   }
 
-  async onLine (input) {
+  async onLine(input) {
     // Cycled command processing.
     const command = parse(input)
-    const resolver = this.manager.execute(command)
-    let toContinue
-    if (resolver instanceof Promise) {
-      toContinue = await resolver;
-    }
+    const toContinue = await this.manager.execute(command)
     this.events.emit(EVENTS.commandExecuted, command)
 
     // If termination signal is received the readline stream is closed. The application is closed.
     if (toContinue === false) {
-     this.readline.close()
+      this.readline.close()
     }
   }
 }
 
-function runCLI(greetings, _commands,   injection=null, readLine=null) {
+function runCLI(greetings, _commands, injection = null, readLine = null) {
   const _injection = {
     console
   }
@@ -91,35 +87,39 @@ function runCLI(greetings, _commands,   injection=null, readLine=null) {
     })
   }
   const cli = new CLI(manager, readLine, greetings)
-  const { console: _console } = injection
+  const {console: _console} = injection
   _console.log(greetings)
 
   return cli
 }
 
-function runCommand(_commands, injection=null, args) {
-    const _injection = {
-        console
+function runCommand(_commands, injection = null, args) {
+  const _injection = {
+    console
+  }
+  const allCommands = [
+    ...commands,
+    ..._commands
+  ]
+  if (injection) {
+    injection = {
+      ..._injection,
+      ...injection
     }
-    const allCommands = [
-        ...commands,
-        ..._commands
-    ]
-    if (injection) {
-        injection = {
-            ..._injection,
-            ...injection
-        }
-    } else {
-        injection = _injection
-    }
-    const manager = new Manager(allCommands, injection)
-    const tokens = args
-    const command = tokensToCommand(tokens)
+  } else {
+    injection = _injection
+  }
+  const manager = new Manager(allCommands, injection)
+  const tokens = args
+  console.log(tokens)
+  const request = tokensToCommand(tokens)
+
+  return manager.execute(request)
 }
 
 module.exports = {
   commands,
   runCLI,
+  runCommand,
   EVENTS
 }
