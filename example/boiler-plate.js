@@ -1,4 +1,5 @@
 (async function() {
+  // const { runCLI } = require('console-command-manager') // @todo Uncomment at the real case.
   const { runCLI } = require('../src/cli')
 
   runCLI('Hello!', [

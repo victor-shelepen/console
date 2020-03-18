@@ -1,13 +1,23 @@
+const EventEmitter = require('events')
+const EVENTS = {
+  onError: 'onError'
+}
+
 class Manager {
   constructor(commands, injection) {
     this.setCommands(commands)
     this.injection = injection
+    this.events = new EventEmitter()
   }
 
   execute(request) {
     const command = this.get(request)
-
-    return command.handler({command, request, injection: this.injection, manager: this})
+    try {
+      return command.handler({command, request, injection: this.injection, manager: this})
+    }
+    catch(e) {
+      this.events.emit(EVENTS.onError, e)
+    }
   }
 
   setCommands(commands) {
@@ -44,5 +54,6 @@ class Manager {
 }
 
 module.exports = {
-  Manager
+  Manager,
+  EVENTS
 }

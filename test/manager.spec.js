@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { Manager } = require('../src/manager')
+const { Manager, EVENTS } = require('../src/manager')
 
 describe('CLI commander testing', () => {
   let manager
@@ -40,6 +40,12 @@ describe('CLI commander testing', () => {
     {
       name: 'command',
       handler: () => Promise.resolve(true)
+    },
+    {
+      name: 'invokeError',
+      handler: () => {
+        throw new Error('Test error.')
+      }
     }
   ]
 
@@ -56,6 +62,17 @@ describe('CLI commander testing', () => {
     assert.equal(command.group, 'default')
   })
 
+  it('Error invoking command.', (done) => {
+    const request = {
+      name: 'invokeError',
+    }
+    manager.events.once(EVENTS.onError, (e) => {
+      assert.equal('Test error.', e.message)
+      done()
+    })
+    manager.execute(request)
+  })
+
   it('Get', () => {
     const request = {
       name: 'print',
@@ -67,7 +84,7 @@ describe('CLI commander testing', () => {
 
   it('Prints command list', () => {
     const outPut = manager.toString()
-    const etalon = 'print - Letter print command.\ndraw\ncommand'
+    const etalon = 'print - Letter print command.\ndraw\ncommand\ninvokeError'
     assert.equal(outPut, etalon)
   })
 

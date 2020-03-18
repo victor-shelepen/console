@@ -1,5 +1,6 @@
 (async function () {
-  const {runCommand} = require('../src/cli')
+  // const { runCommand } = require('console-command-manager') // @todo Uncomment at the real case.
+  const { runCommand } = require('../src/cli')
   await runCommand(
     [
       {
