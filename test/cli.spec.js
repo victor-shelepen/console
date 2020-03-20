@@ -4,6 +4,10 @@ const EventEmitter = require('events')
 const { _console } = require('./helper')
 
 describe('Commander', () => {
+  before(() => {
+    _console.clear()
+  })
+
   it('Run commander', async () => {
     await runCommand(
       [
@@ -28,9 +32,10 @@ describe('Commander', () => {
 })
 
 describe('CLI', () => {
-  let readline, _console, cli
+  let readline, cli
 
   before(() => {
+    _console.clear()
     readline = new EventEmitter()
     readline.close = function() {
       this.isClosed = true

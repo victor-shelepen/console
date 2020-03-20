@@ -1,15 +1,14 @@
 (async function() {
   // const { runCLI } = require('console-command-manager') // @todo Uncomment at the real case.
-  const { runCLI } = require('../src/cli')
+  const { runCLI, extractValue } = require('../src/index')
 
   runCLI('Hello!', [
     {
       name: 'print',
       title: 'Prints values',
       handler: async ({request, injection: { console, DateFactory } }) => {
-        console.log(`I am printing you - ${request.values.join(' --> ')} -  now at ${new DateFactory()}`)
-
-        return true
+        const format = extractValue(request.args, 'format', 'not_set')
+        console.log(`I am printing you text  ' ${request.values.join(' ')}  at ${new DateFactory()} ' format - ${format}`)
       }
     },
   ],
