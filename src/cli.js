@@ -1,10 +1,7 @@
-const {parse, parseCommand, tokensToCommand} = require('./parser')
-const {Manager} = require('./manager')
+const {parse, parseCommand, tokensToCommand, extractValue} = require('./parser')
+const {Manager, EVENTS} = require('./manager')
 const readline = require('readline')
 const EventEmmiter = require('events')
-const EVENTS = {
-  commandExecuted: 'commandExecuted'
-}
 
 const commands = [
   // List commands.
@@ -110,7 +107,15 @@ function runCommand(_commands, injection = null, tokens) {
     injection = _injection
   }
   const manager = new Manager(allCommands, injection)
-  const request = tokensToCommand(tokens)
+  manager.events.on(EVENTS.error, ({e, request}) => {
+    const { console } = injection
+    console.log(e.toString())
+    const stack = extractValue(request.args, 'stack', false)
+    if (stack) {
+      console.log(e.stack)
+    }
+  })
+  request = tokensToCommand(tokens)
 
   return manager.execute(request)
 }

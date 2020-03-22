@@ -1,6 +1,7 @@
 const EventEmitter = require('events')
 const EVENTS = {
-  onError: 'onError'
+  error: 'error',
+  executed: 'executed'
 }
 
 class Manager {
@@ -10,13 +11,16 @@ class Manager {
     this.events = new EventEmitter()
   }
 
-  execute(request) {
+  async execute(request) {
     const command = this.get(request)
     try {
-      return command.handler({command, request, injection: this.injection, manager: this})
+      const result = await command.handler({command, request, injection: this.injection, manager: this})
+      this.events.emit(EVENTS.executed, { request, result })
+
+      return result
     }
     catch(e) {
-      this.events.emit(EVENTS.onError, e)
+      this.events.emit(EVENTS.error, {e, request})
     }
   }
 

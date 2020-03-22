@@ -16,8 +16,6 @@ describe('Commander', () => {
           title: 'Prints values',
           handler: async ({ injection: { console } }) => {
             console.log('Run commander testing.')
-
-            return true
           }
         },
       ],
@@ -28,6 +26,41 @@ describe('Commander', () => {
     )
     const line = _console.objects.pop()
     assert.equal(line, 'Run commander testing.')
+  })
+
+  describe('Handle error message', async () => {
+    const runWithError = async (tokens) => {
+      await runCommand(
+        [
+          {
+            name: 'print',
+            title: 'Prints values',
+            handler: async ({ injection: { console } }) => {
+              throw new Error('Printer does not work.')
+            }
+          },
+        ],
+        {
+          console: _console
+        },
+        tokens
+      )
+    }
+
+    it('Error', async () => {
+      await runWithError(['print'])
+      const line = _console.objects.pop()
+      const etalon = 'Error: Printer does not work.'
+      assert.equal(line, etalon)
+    })
+
+    it('Error with stack', async () => {
+      await runWithError(['print', '--stack'])
+      const lines = _console.objects.pop().split('\n')
+      const etalon = 'Error: Printer does not work.'
+      assert.equal(lines[0], etalon)
+      assert.notEqual(lines[6].match(/at callFn/i), null)
+    })
   })
 })
 

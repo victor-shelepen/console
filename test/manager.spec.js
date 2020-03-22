@@ -1,7 +1,7 @@
 const assert = require('assert')
 const { Manager, EVENTS } = require('../src/manager')
 
-describe('CLI commander testing', () => {
+describe('Command manager testing', () => {
   let manager
   const injection = {
     time: 'timeString'
@@ -62,15 +62,29 @@ describe('CLI commander testing', () => {
     assert.equal(command.group, 'default')
   })
 
-  it('Error invoking command.', (done) => {
-    const request = {
-      name: 'invokeError',
-    }
-    manager.events.once(EVENTS.onError, (e) => {
-      assert.equal('Test error.', e.message)
-      done()
+  describe('Events', () => {
+    it('Error invoking command.', (done) => {
+      const request = {
+        name: 'invokeError',
+      }
+      manager.events.once(EVENTS.error, ({e, request: _request}) => {
+        assert.equal('Test error.', e.message)
+        assert.equal(request.name, _request.name)
+        done()
+      })
+      manager.execute(request)
     })
-    manager.execute(request)
+
+    it('Executed', (done) => {
+      const request = {
+        name: 'command',
+      }
+      manager.events.once(EVENTS.executed, ({request: _request}) => {
+        assert.equal(request.name, _request.name)
+        done()
+      })
+      manager.execute(request)
+    })
   })
 
   it('Get', () => {
