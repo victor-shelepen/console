@@ -1,7 +1,6 @@
 const {parse, parseCommand, tokensToCommand, extractValue} = require('./parser')
 const {Manager, EVENTS} = require('./manager')
 const readline = require('readline')
-const EventEmmiter = require('events')
 
 const commands = [
   // List commands.
@@ -29,8 +28,9 @@ const commands = [
   {
     name: 'exit',
     title: 'It terminates the application.',
-    handler: ({injection: {console}}) => {
+    handler: ({injection: {console, readLine}}) => {
       console.log('See you.')
+      readLine.close()
 
       // To break the input cycle return false.
       return false
@@ -40,7 +40,6 @@ const commands = [
 
 class CLI {
   constructor(manager, readline, greetings) {
-    this.events = new EventEmmiter()
     this.manager = manager
     this.readline = readline
     this.greetings = greetings
@@ -51,7 +50,6 @@ class CLI {
     // Cycled command processing.
     const command = parse(input)
     const toContinue = await this.manager.execute(command)
-    this.events.emit(EVENTS.commandExecuted, command)
 
     // If termination signal is received the readline stream is closed. The application is closed.
     if (toContinue === false) {
@@ -60,37 +58,7 @@ class CLI {
   }
 }
 
-function runCLI(greetings, _commands, injection = null, readLine = null) {
-  const _injection = {
-    console
-  }
-  const allCommands = [
-    ...commands,
-    ..._commands
-  ]
-  if (injection) {
-    injection = {
-      ..._injection,
-      ...injection
-    }
-  } else {
-    injection = _injection
-  }
-  const manager = new Manager(allCommands, injection)
-  if (!readLine) {
-    readLine = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    })
-  }
-  const cli = new CLI(manager, readLine, greetings)
-  const {console: _console} = injection
-  _console.log(greetings)
-
-  return cli
-}
-
-function runCommand(_commands, injection = null, tokens) {
+function bootstrapCommandManager( _commands, injection = null) {
   const _injection = {
     console
   }
@@ -115,14 +83,47 @@ function runCommand(_commands, injection = null, tokens) {
       console.log(e.stack)
     }
   })
-  request = tokensToCommand(tokens)
+
+  return manager
+}
+
+function runCLI(greetings, _commands, injection = null, readLine = null) {
+  if (!readLine) {
+    readLine = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+  }
+  if (injection) {
+    injection = {
+      ...injection,
+      readLine
+    }
+  }
+
+  const manager = bootstrapCommandManager(_commands, injection)
+  manager.events.on(EVENTS.executed, ({ request, result }) => {
+    if (request.name == 'exit' && !!result) {
+      cli.readline.close()
+    }
+  })
+  const cli = new CLI(manager, readLine, greetings)
+  const {console: _console} = injection
+  _console.log(greetings)
+
+  return cli
+}
+
+function runCommand(_commands, injection = null, tokens) {
+  const manager = bootstrapCommandManager(_commands, injection)
+  const request = tokensToCommand(tokens)
 
   return manager.execute(request)
 }
 
 module.exports = {
+  bootstrapCommandManager,
   commands,
   runCLI,
-  runCommand,
-  EVENTS
+  runCommand
 }

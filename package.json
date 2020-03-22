@@ -1,6 +1,6 @@
 {
   "name": "console-command-manager",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "Console command manager. It helps run custom commands from bash, is able to control your service from console like the think client does. String parser command manager and console runner are main parts of the project.",
   "main": "src/index.js",
   "types": "dts/index.d.ts",

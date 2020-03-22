@@ -1,9 +1,9 @@
 const assert = require('assert')
-const { runCLI, EVENTS, runCommand } = require('../src/cli')
+const { runCLI, runCommand, EVENTS, bootstrapCommandManager } = require('../src')
 const EventEmitter = require('events')
 const { _console } = require('./helper')
 
-describe('Commander', () => {
+describe('Commander run', () => {
   before(() => {
     _console.clear()
   })
@@ -27,41 +27,49 @@ describe('Commander', () => {
     const line = _console.objects.pop()
     assert.equal(line, 'Run commander testing.')
   })
+})
 
-  describe('Handle error message', async () => {
-    const runWithError = async (tokens) => {
-      await runCommand(
-        [
-          {
-            name: 'print',
-            title: 'Prints values',
-            handler: async ({ injection: { console } }) => {
-              throw new Error('Printer does not work.')
-            }
-          },
-        ],
-        {
-          console: _console
-        },
-        tokens
-      )
+describe('Manager assembled', () => {
+  const commands = [
+    {
+      name: 'print',
+      title: 'Prints values',
+      handler: async () => {
+        throw new Error('Printer does not work.')
+      }
+    },
+  ]
+  const injection = {
+    console: _console
+  }
+  const manager = bootstrapCommandManager(commands, injection)
+
+  it('Error', async () => {
+    const request = {
+      name: 'print',
     }
-
-    it('Error', async () => {
-      await runWithError(['print'])
-      const line = _console.objects.pop()
-      const etalon = 'Error: Printer does not work.'
-      assert.equal(line, etalon)
-    })
-
-    it('Error with stack', async () => {
-      await runWithError(['print', '--stack'])
-      const lines = _console.objects.pop().split('\n')
-      const etalon = 'Error: Printer does not work.'
-      assert.equal(lines[0], etalon)
-      assert.notEqual(lines[6].match(/at callFn/i), null)
-    })
+    await manager.execute(request)
+    const line = _console.objects.pop()
+    const etalon = 'Error: Printer does not work.'
+    assert.equal(line, etalon)
   })
+
+  it('Error with stack', async () => {
+    const request = {
+      name: 'print',
+      args: [{
+        key: 'stack',
+        value: 'true',
+        short: false
+      }]
+    }
+    await manager.execute(request)
+    const lines = _console.objects.pop().split('\n')
+    const etalon = 'Error: Printer does not work.'
+    assert.equal(lines[0], etalon)
+    assert.notEqual(lines[2].match(/at Manager\.execute/i), null)
+  })
+
 })
 
 describe('CLI', () => {
@@ -71,7 +79,7 @@ describe('CLI', () => {
     _console.clear()
     readline = new EventEmitter()
     readline.close = function() {
-      this.isClosed = true
+      this.emit('end', true)
     }
     const commands = [
       {
@@ -121,7 +129,7 @@ describe('CLI', () => {
 
     it('Async', (done) => {
       readline.emit('line', 'async')
-      cli.events.once(EVENTS.commandExecuted, () => {
+      cli.manager.events.once(EVENTS.executed, () => {
         const etalon = 'Async test.'
         const lines = _console.objects.pop()
         assert.equal(lines, etalon)
@@ -131,14 +139,16 @@ describe('CLI', () => {
       assert.equal(undefined, lines)
     })
 
-    it('Exit', () => {
+    it('Exit', (done) => {
       readline.emit('line', 'exit')
       const lines = _console.objects.pop()
       const etalon = 'See you.'
       assert.equal(lines, etalon)
 
-      // @todo Bug: async pipe is not chained.
-      // assert.equal(readline.isClosed, true)
+      readline.once('end', (result) => {
+        assert.equal(result, true)
+        done()
+      })
     })
   })
 

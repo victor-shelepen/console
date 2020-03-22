@@ -120,6 +120,9 @@ function parseArgument (token) {
 }
 
 function extractValue (args, key, defaultVal=null) {
+  if (!(args instanceof Array)) {
+    return defaultVal
+  }
   const arg = args
     .filter(arg => arg.key === key)
   if (arg.length === 0) {
