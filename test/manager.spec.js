@@ -96,6 +96,18 @@ describe('Command manager testing', () => {
     assert.equal(command.name, request.name)
   })
 
+  it('Command not found', async (done) => {
+    const request = {
+      name: 'print_does_not_exist',
+    }
+    manager.events.once(EVENTS.error, ({e, request: _request}) => {
+      assert.equal('Command not found!', e.message)
+      assert.equal(request.name, _request.name)
+      done()
+    })
+    await manager.execute(request)
+  })
+
   it('Prints command list', () => {
     const outPut = manager.toString()
     const etalon = 'print - Letter print command.\ndraw\ncommand\ninvokeError'

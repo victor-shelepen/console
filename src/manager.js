@@ -12,8 +12,11 @@ class Manager {
   }
 
   async execute(request) {
-    const command = this.get(request)
     try {
+      const command = this.get(request)
+      if (!command) {
+        throw new Error('Command not found!')
+      }
       const result = await command.handler({command, request, injection: this.injection, manager: this})
       this.events.emit(EVENTS.executed, { request, result })
 
