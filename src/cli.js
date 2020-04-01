@@ -27,6 +27,7 @@ const commands = [
   // Exit command.
   {
     name: 'exit',
+    weight: 101,
     title: 'It terminates the application.',
     handler: ({injection: {console, readLine}}) => {
       console.log('See you.')

@@ -113,10 +113,10 @@ describe('CLI', () => {
       const lines = _console.objects.pop()
       const etalon = 'Available commands:\n' +
         '\n' +
-        'list - Lists commands available.\n' +
-        'show - Describes the command.\n' +
-        'exit - It terminates the application.\n' +
-        'async - Async example.';
+        '\tasync - Async example.\n' +
+        '\tlist - Lists commands available.\n' +
+        '\tshow - Describes the command.\n' +
+        '\texit - It terminates the application.'
       assert.equal(lines, etalon)
     })
 

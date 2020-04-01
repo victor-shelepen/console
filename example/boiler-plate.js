@@ -15,4 +15,12 @@
     {
       DateFactory: Date
     })
+
+  manager.events.once(EVENTS.executed, ({request: _request}) => {
+    /**
+     * You are able to catch the exit command and dispose resources for an example.
+     */
+    assert.equal(request.name, _request.name)
+    done()
+  })
 })()

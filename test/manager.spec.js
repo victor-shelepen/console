@@ -7,6 +7,14 @@ describe('Command manager testing', () => {
     time: 'timeString'
   }
 
+  const groups = [
+    {
+      name: 'MFP',
+      title: 'MFP',
+      description: 'Multi functional printer'
+    }
+  ]
+
   const commands = [
     {
       name: 'print',
@@ -46,11 +54,51 @@ describe('Command manager testing', () => {
       handler: () => {
         throw new Error('Test error.')
       }
+    },
+    {
+      name: 'z-command',
+    },
+    {
+      name: 'exit',
+      weight: 1
     }
   ]
 
   before(() => {
-    manager = new Manager(commands, injection)
+    manager = new Manager(commands, injection, groups)
+  })
+
+  describe('Groups', () => {
+    it('Get commands', () => {
+      const commands = manager.getGroupCommands()
+      assert.equal(commands.length, 4)
+    })
+
+    it('Get group defition', () => {
+      const definition = manager.getGroupDefinition('default')
+      assert.equal('Default', definition.title)
+    })
+
+    it('To string - without group summary', () => {
+      const string = manager.groupToString()
+      const etalon = '\tcommand\n'
+        + '\tinvokeError\n'
+        + '\tz-command\n'
+        + '\texit'
+      assert.equal(string, etalon)
+    })
+
+    it('To string - with group summary', () => {
+      const defaultGroupDefinition = manager.getGroupDefinition('default')
+      defaultGroupDefinition.showSummary = true
+      const string = manager.groupToString()
+      const etalon = 'Default - Commands without groups are assembled into the default group.'
+        + '\tcommand\n'
+        + '\tinvokeError\n'
+        + '\tz-command\n'
+        + '\texit'
+      assert.equal(string, etalon)
+    })
   })
 
   it('Default group without definition.', () => {
@@ -87,13 +135,30 @@ describe('Command manager testing', () => {
     })
   })
 
-  it('Get', () => {
+  it('Get command', () => {
     const request = {
       name: 'print',
       group: 'MFP'
     }
     const command =  manager.get(request)
     assert.equal(command.name, request.name)
+  })
+
+  describe('Command', () => {
+    let command
+
+    before(() => {
+      const request = {
+        name: 'print',
+        group: 'MFP'
+      }
+      command =  manager.get(request)
+    })
+
+    it('Command summary', () => {
+      const commandSummary = manager.commandSummary(command)
+      assert.equal(commandSummary, 'print - Letter print command.')
+    })
   })
 
   it('Command not found', async (done) => {
@@ -110,7 +175,12 @@ describe('Command manager testing', () => {
 
   it('Prints command list', () => {
     const outPut = manager.toString()
-    const etalon = 'print - Letter print command.\ndraw\ncommand\ninvokeError'
+    const etalon = 	'\tcommand\n' +
+      '\tinvokeError\n' +
+      '\tz-command\n' +
+      '\texit\n' +
+      'MFP - Multi functional printer\tdraw\n' +
+      '\tprint - Letter print command.'
     assert.equal(outPut, etalon)
   })
 

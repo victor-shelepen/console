@@ -1,3 +1,4 @@
+const { buildWeightFieldSortChecker } = require('./lib')
 const EventEmitter = require('events')
 const EVENTS = {
   error: 'error',
@@ -5,9 +6,19 @@ const EVENTS = {
 }
 
 class Manager {
-  constructor(commands, injection) {
+  constructor(commands, injection, groups=[]) {
     this.setCommands(commands)
     this.injection = injection
+    this.groups = [
+      ...groups,
+      ...[{
+        name: 'default',
+        title: 'Default',
+        showSummary: false,
+        description: 'Commands without groups are assembled into the default group.',
+        weight: -1
+      }]
+    ]
     this.events = new EventEmitter()
   }
 
@@ -29,10 +40,15 @@ class Manager {
 
   setCommands(commands) {
     commands.forEach((command) => {
-      if (!command.group) {
-        command.group = 'default'
-      }
-    })
+        if (!command.weight) {
+          command.weight = 0
+        }
+        if (!command.group) {
+          command.group = 'default'
+        }
+      })
+    commands = commands
+      .sort(buildWeightFieldSortChecker('name'))
 
     this.commands = commands
   }
@@ -42,15 +58,41 @@ class Manager {
       .find((c) => c.name === name && c.group === group)
   }
 
-  toString() {
+  getGroupCommands(name='default') {
     return this.commands
-      .map(c => c.name + (c.title ? ` - ${c.title}` : ''))
+      .filter(c => c.group == name)
+  }
+
+  toString() {
+    return this.groups
+      .sort(buildWeightFieldSortChecker('title'))
+      .map(e => this.groupToString(e.name))
       .join('\n')
   }
 
+  getGroupDefinition(name='default') {
+    return this.groups.find(e => e.name === name)
+  }
+
+  groupToString(name='default') {
+    const groupDefition = this.getGroupDefinition(name)
+    const commands = this.getGroupCommands(name)
+    let groupSummary = ''
+    if (groupDefition.showSummary == undefined || groupDefition.showSummary === true) {
+      groupSummary = `${groupDefition.title} - ${groupDefition.description}`
+    }
+
+    return groupSummary
+      + commands.map(c => '\t' + this.commandSummary(c)).join('\n')
+  }
+
+  commandSummary(command) {
+    return command.name
+    + (command.title ? ` - ${command.title}`: '')
+  }
+
   commandToString(command) {
-    let output = command.name
-      + (command.title ? ` - ${command.title}`: '')
+    let output = this.commandSummary(command)
       + (command.description ? `\n${command.description}` : '');
     if (command.arguments && command.arguments.length > 0) {
       output += '\n' + command.arguments.map(a => `\t${a.key} - ${a.description}`).join('\n');
