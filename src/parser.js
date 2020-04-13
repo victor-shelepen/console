@@ -50,7 +50,7 @@ function tokensToCommand (_tokens) {
       commandTokens.push(token)
     }
   }
-  if (!commandTokens.length === 0) {
+  if (commandTokens.length === 0) {
     throw new Error('There is not a command.')
   }
   const commandToken = commandTokens.shift()

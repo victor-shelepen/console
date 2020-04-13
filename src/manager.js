@@ -24,9 +24,16 @@ class Manager {
 
   async execute(request) {
     try {
-      const command = this.get(request)
-      if (!command) {
-        throw new Error('Command not found!')
+      let command
+      if (request) {
+        command = this.get(request)
+      }
+      if (command == undefined) {
+        command = this.getDefault()
+        request = undefined
+        if (!command) {
+          throw new Error('Default command not found.')
+        }
       }
       const result = await command.handler({command, request, injection: this.injection, manager: this})
       this.events.emit(EVENTS.executed, { request, result })
@@ -56,6 +63,11 @@ class Manager {
   get({name, group='default'}) {
     return this.commands
       .find((c) => c.name === name && c.group === group)
+  }
+
+  getDefault() {
+    return this.commands
+      .find((c) => c.default === true)
   }
 
   getGroupCommands(name='default') {

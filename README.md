@@ -7,7 +7,7 @@
 
 It run custom bash commands, is able to control your service from console like the think client does.
 
-Be free and ask questings on [Gitter](https://gitter.im/vlikin/Lobby)
+Be free and ask me questions personally on [Gitter](https://gitter.im/vlikin/Lobby)
 ```javascript
 (async function () {
   // const { runCommand } = require('console-command-manager') // @todo Uncomment at the real case.

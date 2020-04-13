@@ -57,6 +57,11 @@ describe('Command manager testing', () => {
     },
     {
       name: 'z-command',
+      default: true,
+      handler: () => {
+
+        return 'z-command has been executed.'
+      }
     },
     {
       name: 'exit',
@@ -159,18 +164,22 @@ describe('Command manager testing', () => {
       const commandSummary = manager.commandSummary(command)
       assert.equal(commandSummary, 'print - Letter print command.')
     })
+
+    it('Get default', () => {
+      const command = manager.getDefault()
+      assert.equal(command.name, 'z-command')
+    })
   })
 
-  it('Command not found', async (done) => {
-    const request = {
-      name: 'print_does_not_exist',
-    }
-    manager.events.once(EVENTS.error, ({e, request: _request}) => {
-      assert.equal('Command not found!', e.message)
-      assert.equal(request.name, _request.name)
+  it('Default command not found', async (done) => {
+    const defaultCommand = manager.getDefault()
+    defaultCommand.default = false
+    manager.events.once(EVENTS.error, ({e}) => {
+      assert.equal('Default command not found.', e.message)
+      defaultCommand.default = true
       done()
     })
-    await manager.execute(request)
+    await manager.execute()
   })
 
   it('Prints command list', () => {
@@ -198,20 +207,45 @@ describe('Command manager testing', () => {
     assert.equal(outPut, etalon)
   })
 
-  it('Executes the command', async () => {
-    const request = {
-      name: 'print',
-      group: 'MFP',
-      args: [
-        {
-          key: '--format',
-          value: 'A4',
-          short: 'false'
-        }
-      ]
-    }
-    const result = await manager.execute(request)
-    const etalon = 'print has been processed. injector - timeString'
-    assert.equal(result, etalon)
+  describe('Command execution', () => {
+    it('Empty request - default command', (done) => {
+      manager.events.once(EVENTS.executed, ({request, result}) => {
+        assert.equal(undefined, request)
+        const etalon = 'z-command has been executed.'
+        assert.equal(etalon, result)
+        done()
+      })
+      manager.execute()
+    })
+
+    it('Command does not exist - default command', (done) => {
+      manager.events.once(EVENTS.executed, ({request, result}) => {
+        assert.equal(undefined, request)
+        const etalon = 'z-command has been executed.'
+        assert.equal(etalon, result)
+        done()
+      })
+      const request = {
+        name: 'not-found'
+      }
+      manager.execute(request)
+    })
+
+    it('Executes the command', async () => {
+      const request = {
+        name: 'print',
+        group: 'MFP',
+        args: [
+          {
+            key: '--format',
+            value: 'A4',
+            short: 'false'
+          }
+        ]
+      }
+      const result = await manager.execute(request)
+      const etalon = 'print has been processed. injector - timeString'
+      assert.equal(result, etalon)
+    })
   })
 })
