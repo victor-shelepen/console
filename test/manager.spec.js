@@ -1,5 +1,5 @@
-const assert = require('assert')
-const { Manager, EVENTS } = require('../src/manager')
+import assert from 'assert'
+import { Manager, EVENTS } from '../src/manager'
 
 describe('Command manager testing', () => {
   let manager
@@ -69,19 +69,19 @@ describe('Command manager testing', () => {
     }
   ]
 
-  before(() => {
+  beforeEach(() => {
     manager = new Manager(commands, injection, groups)
   })
 
   describe('Groups', () => {
     it('Get commands', () => {
       const commands = manager.getGroupCommands()
-      assert.equal(commands.length, 4)
+      expect(commands.length).toBe(4)
     })
 
     it('Get group defition', () => {
       const definition = manager.getGroupDefinition('default')
-      assert.equal('Default', definition.title)
+      expect('Default').toBe(definition.title)
     })
 
     it('To string - without group summary', () => {
@@ -90,7 +90,7 @@ describe('Command manager testing', () => {
         + '\tinvokeError\n'
         + '\tz-command\n'
         + '\texit'
-      assert.equal(string, etalon)
+      expect(string).toBe(etalon)
     })
 
     it('To string - with group summary', () => {
@@ -102,7 +102,7 @@ describe('Command manager testing', () => {
         + '\tinvokeError\n'
         + '\tz-command\n'
         + '\texit'
-      assert.equal(string, etalon)
+      expect(string).toBe(etalon)
     })
   })
 
@@ -111,8 +111,8 @@ describe('Command manager testing', () => {
       name: 'command',
     }
     const command =  manager.get(request)
-    assert.equal(command.name, request.name)
-    assert.equal(command.group, 'default')
+    expect(command.name).toBe(request.name)
+    expect(command.group).toBe('default')
   })
 
   describe('Events', () => {
@@ -121,8 +121,8 @@ describe('Command manager testing', () => {
         name: 'invokeError',
       }
       manager.events.once(EVENTS.error, ({e, request: _request}) => {
-        assert.equal('Test error.', e.message)
-        assert.equal(request.name, _request.name)
+        expect('Test error.').toBe(e.message)
+        expect(request.name).toBe(_request.name)
         done()
       })
       manager.execute(request)
@@ -133,7 +133,7 @@ describe('Command manager testing', () => {
         name: 'command',
       }
       manager.events.once(EVENTS.executed, ({request: _request}) => {
-        assert.equal(request.name, _request.name)
+        expect(request.name).toBe(_request.name)
         done()
       })
       manager.execute(request)
@@ -146,13 +146,13 @@ describe('Command manager testing', () => {
       group: 'MFP'
     }
     const command =  manager.get(request)
-    assert.equal(command.name, request.name)
+    expect(command.name).toBe(request.name)
   })
 
   describe('Command', () => {
     let command
 
-    before(() => {
+    beforeEach(() => {
       const request = {
         name: 'print',
         group: 'MFP'
@@ -162,12 +162,12 @@ describe('Command manager testing', () => {
 
     it('Command summary', () => {
       const commandSummary = manager.commandSummary(command)
-      assert.equal(commandSummary, 'print - Letter print command.')
+      expect(commandSummary).toBe('print - Letter print command.')
     })
 
     it('Get default', () => {
       const command = manager.getDefault()
-      assert.equal(command.name, 'z-command')
+      expect(command.name).toBe('z-command')
     })
   })
 
@@ -175,7 +175,7 @@ describe('Command manager testing', () => {
     const defaultCommand = manager.getDefault()
     defaultCommand.default = false
     manager.events.once(EVENTS.error, ({e}) => {
-      assert.equal('Default command not found.', e.message)
+      expect('Default command not found.').toBe(e.message)
       defaultCommand.default = true
       done()
     })
@@ -190,7 +190,7 @@ describe('Command manager testing', () => {
       '\texit\n' +
       'MFP - Multi functional printer\tdraw\n' +
       '\tprint - Letter print command.'
-    assert.equal(outPut, etalon)
+    expect(outPut).toEqual(etalon)
   })
 
   it('Prints full description of a command', () => {
@@ -204,15 +204,15 @@ describe('Command manager testing', () => {
       'This is a command of the printer that allows to print something on a sheet.\n' +
       '\t--format - The format of a printing letter.\n' +
       '\t--orientation - Paper orientation.'
-    assert.equal(outPut, etalon)
+    expect(outPut).toBe(etalon)
   })
 
   describe('Command execution', () => {
     it('Empty request - default command', (done) => {
       manager.events.once(EVENTS.executed, ({request, result}) => {
-        assert.equal(undefined, request)
+        expect(undefined).toBe(request)
         const etalon = 'z-command has been executed.'
-        assert.equal(etalon, result)
+        expect(etalon).toBe(result)
         done()
       })
       manager.execute()
@@ -220,9 +220,9 @@ describe('Command manager testing', () => {
 
     it('Command does not exist - default command', (done) => {
       manager.events.once(EVENTS.executed, ({request, result}) => {
-        assert.equal(undefined, request)
+        expect(undefined).toBe(request)
         const etalon = 'z-command has been executed.'
-        assert.equal(etalon, result)
+        expect(etalon).toBe(result)
         done()
       })
       const request = {
@@ -245,7 +245,7 @@ describe('Command manager testing', () => {
       }
       const result = await manager.execute(request)
       const etalon = 'print has been processed. injector - timeString'
-      assert.equal(result, etalon)
+      expect(result).toBe(etalon)
     })
   })
 })

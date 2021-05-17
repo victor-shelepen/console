@@ -1,5 +1,5 @@
-const { buildWeightFieldSortChecker } = require('./lib')
-const EventEmitter = require('events')
+import { buildWeightFieldSortChecker } from './lib'
+import EventEmitter from 'events'
 const EVENTS = {
   error: 'error',
   executed: 'executed'
