@@ -5,7 +5,7 @@ const EVENTS = {
   executed: 'executed'
 }
 
-class Manager {
+export class Manager {
   constructor(commands, injection, groups=[]) {
     this.setCommands(commands)
     this.injection = injection
@@ -114,7 +114,3 @@ class Manager {
   }
 }
 
-module.exports = {
-  Manager,
-  EVENTS
-}

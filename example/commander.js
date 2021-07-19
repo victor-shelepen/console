@@ -1,6 +1,7 @@
+// import { runCommand, extractValue } from 'console-command-manager' // @todo Uncomment at the real case.
+import { runCommand, extractValue } from '../src/index'
+
 (async function () {
-  // const { runCommand } = require('console-command-manager') // @todo Uncomment at the real case.
-  const { runCommand, extractValue } = require('../src/index')
   await runCommand(
     [
       {
@@ -18,3 +19,4 @@
     process.argv.slice(2)
   )
 })()
+
