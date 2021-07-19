@@ -1,13 +1,13 @@
-const {parse, parseCommand, tokensToCommand, extractValue} = require('./parser')
-const {Manager, EVENTS} = require('./manager')
-const readline = require('readline')
+import { parse, parseCommand, tokensToCommand, extractValue } from './parser'
+import { Manager, EVENTS } from './manager'
+import readline from 'readline'
 
 const commands = [
   // List commands.
   {
     name: 'list',
     title: 'Lists commands available.',
-    handler: ({manager, injection: {console}}) => {
+    handler: ({ manager, injection: { console } }) => {
       const output = 'Available commands:\n\n' + manager.toString()
       console.log(output)
     }
@@ -16,7 +16,7 @@ const commands = [
   {
     name: 'show',
     title: 'Describes the command.',
-    handler: ({manager, request, injection: {console}}) => {
+    handler: ({ manager, request, injection: { console } }) => {
       const commandRequest = parseCommand(request.values[0])
       const command = manager.get(commandRequest)
       const commandString = manager.commandToString(command)
@@ -29,7 +29,7 @@ const commands = [
     name: 'exit',
     weight: 101,
     title: 'It terminates the application.',
-    handler: ({injection: {console, readLine}}) => {
+    handler: ({ injection: { console, readLine } }) => {
       console.log('See you.')
       readLine.close()
 
@@ -59,7 +59,7 @@ class CLI {
   }
 }
 
-function bootstrapCommandManager( _commands, injection = null) {
+function bootstrapCommandManager(_commands, injection = null) {
   const _injection = {
     console
   }
@@ -76,7 +76,7 @@ function bootstrapCommandManager( _commands, injection = null) {
     injection = _injection
   }
   const manager = new Manager(allCommands, injection)
-  manager.events.on(EVENTS.error, ({e, request}) => {
+  manager.events.on(EVENTS.error, ({ e, request }) => {
     const { console } = injection
     console.log(e.toString())
     const stack = extractValue(request.args, 'stack', false)
@@ -109,7 +109,7 @@ function runCLI(greetings, _commands, injection = null, readLine = null) {
     }
   })
   const cli = new CLI(manager, readLine, greetings)
-  const {console: _console} = injection
+  const { console: _console } = injection
   _console.log(greetings)
 
   return cli
