@@ -9,6 +9,7 @@ describe('Commander run', () => {
 
   it('Run commander', async () => {
     await runCommand(
+      ['print'],
       [
         {
           name: 'print',
@@ -18,10 +19,10 @@ describe('Commander run', () => {
           }
         },
       ],
+      [],
       {
         console: _console
-      },
-      ['print']
+      }
     )
     const line = _console.objects.pop()
     expect(line).toBe('Run commander testing.')
@@ -41,7 +42,7 @@ describe('Manager assembled', () => {
   const injection = {
     console: _console
   }
-  const manager = bootstrapCommandManager(commands, injection)
+  const manager = bootstrapCommandManager(commands, [], injection)
 
   it('Error', async () => {
     const request = {
@@ -96,7 +97,7 @@ describe('CLI', () => {
         }
       },
     ]
-    cli = runCLI('Greetings.', commands, {
+    cli = runCLI('Greetings.', commands, [], {
       console: _console
     }, readline)
   })

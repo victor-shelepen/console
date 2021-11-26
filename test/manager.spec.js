@@ -70,7 +70,7 @@ describe('Command manager testing', () => {
   ]
 
   beforeEach(() => {
-    manager = new Manager(commands, injection, groups)
+    manager = new Manager(commands, groups, injection)
   })
 
   describe('Groups', () => {

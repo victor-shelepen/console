@@ -1,12 +1,13 @@
 import { buildWeightFieldSortChecker } from './lib'
 import EventEmitter from 'events'
-const EVENTS = {
+
+export const EVENTS = {
   error: 'error',
   executed: 'executed'
 }
 
 export class Manager {
-  constructor(commands, injection, groups=[]) {
+  constructor(commands, groups=[], injection=null) {
     this.setCommands(commands)
     this.injection = injection
     this.groups = [

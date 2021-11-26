@@ -59,7 +59,7 @@ class CLI {
   }
 }
 
-function bootstrapCommandManager(_commands, injection = null) {
+export function bootstrapCommandManager(_commands, groups=[], injection = null) {
   const _injection = {
     console
   }
@@ -75,7 +75,7 @@ function bootstrapCommandManager(_commands, injection = null) {
   } else {
     injection = _injection
   }
-  const manager = new Manager(allCommands, injection)
+  const manager = new Manager(allCommands, groups, injection)
   manager.events.on(EVENTS.error, ({ e, request }) => {
     const { console } = injection
     console.log(e.toString())
@@ -88,7 +88,7 @@ function bootstrapCommandManager(_commands, injection = null) {
   return manager
 }
 
-function runCLI(greetings, _commands, injection = null, readLine = null) {
+export function runCLI(greetings, _commands, groups=[], injection = null, readLine = null) {
   if (!readLine) {
     readLine = readline.createInterface({
       input: process.stdin,
@@ -102,7 +102,7 @@ function runCLI(greetings, _commands, injection = null, readLine = null) {
     }
   }
 
-  const manager = bootstrapCommandManager(_commands, injection)
+  const manager = bootstrapCommandManager(_commands, groups, injection)
   manager.events.on(EVENTS.executed, ({ request, result }) => {
     if (request.name == 'exit' && !!result) {
       cli.readline.close()
@@ -115,16 +115,9 @@ function runCLI(greetings, _commands, injection = null, readLine = null) {
   return cli
 }
 
-function runCommand(_commands, injection = null, tokens) {
-  const manager = bootstrapCommandManager(_commands, injection)
+export function runCommand(tokens, _commands, groups=[], injection = null) {
+  const manager = bootstrapCommandManager(_commands, groups, injection)
   const request = tokensToCommand(tokens)
 
   return manager.execute(request)
-}
-
-module.exports = {
-  bootstrapCommandManager,
-  commands,
-  runCLI,
-  runCommand
 }
