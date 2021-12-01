@@ -9,9 +9,10 @@ It run custom bash commands, is able to control your service from console like t
 
 Be free and ask me questions personally on [Gitter](https://gitter.im/vlikin/Lobby)
 ```javascript
+// import { runCommand, extractValue } from 'console-command-manager' // @todo Uncomment at the real case.
+import { runCommand, extractValue } from '../src/index'
+
 (async function () {
-  // const { runCommand } = require('console-command-manager') // @todo Uncomment at the real case.
-  const { runCommand, extractValue } = require('../src/index')
   await runCommand(
     [
       {
@@ -20,8 +21,6 @@ Be free and ask me questions personally on [Gitter](https://gitter.im/vlikin/Lob
         handler: async ({request, injection: {console, DateFactory}}) => {
           const format = extractValue(request.args, 'format', 'not_set')
           console.log(`I am printing you text  ' ${request.values.join(' ')}  at ${new DateFactory()} ' format - ${format}`)
-
-          return true
         }
       },
     ],
@@ -34,7 +33,7 @@ Be free and ask me questions personally on [Gitter](https://gitter.im/vlikin/Lob
 ```
 The command line
 ```bash
-node ./example/commander.js print --format="A4" some text
+npx babel-node ./example/commander.js print --format="A4" some text
 ```
 Produces such lines
 ```bash

@@ -1,12 +1,13 @@
-const { buildWeightFieldSortChecker } = require('./lib')
-const EventEmitter = require('events')
-const EVENTS = {
+import { buildWeightFieldSortChecker } from './lib'
+import EventEmitter from 'events'
+
+export const EVENTS = {
   error: 'error',
   executed: 'executed'
 }
 
-class Manager {
-  constructor(commands, injection, groups=[]) {
+export class Manager {
+  constructor(commands, groups=[], injection=null) {
     this.setCommands(commands)
     this.injection = injection
     this.groups = [
@@ -114,7 +115,3 @@ class Manager {
   }
 }
 
-module.exports = {
-  Manager,
-  EVENTS
-}

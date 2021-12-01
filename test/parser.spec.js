@@ -1,5 +1,5 @@
 const assert = require('assert')
-const {
+import {
   extractValue,
   parse,
   parseArgument,
@@ -9,7 +9,7 @@ const {
   secretSpace,
   stringToTokens,
   tokensToCommand
-} = require('../src/parser')
+} from '../src/parser'
 
 describe('CLI parser testing', () => {
   describe('Extract value', () => {
@@ -65,7 +65,7 @@ describe('CLI parser testing', () => {
       assert.equal(tokens[1], `--orientation=a${secretSpace}l${secretSpace}b${secretSpace}u${secretSpace}m`)
     })
 
-    it('Common', () => {
+    it.only('Common', () => {
       const tokens = stringToTokens(' --format=A4    --orientation="a l b u m" printer.print  ')
       assert.equal(tokens[1], `--orientation=a${secretSpace}l${secretSpace}b${secretSpace}u${secretSpace}m`)
     })

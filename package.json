@@ -1,12 +1,12 @@
 {
   "name": "console-command-manager",
   "version": "0.0.7",
-  "description": "Console command manager. It helps run custom commands from bash, is able to control your service from console like the think client does. String parser command manager and console runner are main parts of the project.",
+  "description": "Console command manager. It helps run custom commands from bash, can control your service from the console as the thin client does. String parser command manager and console runner are main parts of the project.",
   "main": "src/index.js",
   "types": "dts/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vlikin/console"
+    "url": "https://github.com/victor-shelepen/console"
   },
   "keywords": [
     "bash",
@@ -17,27 +17,33 @@
   "scripts": {
     "lint": "eslint src/**/*.js test/**/*.js",
     "lint-fix": "eslint --fix src/**/*.js test/**/*.js",
-    "test": " mocha test/**/*.spec.js",
-    "coverage": "nyc npm run test"
+    "coverage": "jest --coverage=true",
+    "test": "jest"
   },
   "author": "vlikin",
   "license": "ISC",
   "dependencies": {
-    "readline": "^1.3.0"
+    "readline": "^1.3.0",
+    "request": "^2.88.2"
   },
   "files": [
     "src",
     "dts"
   ],
   "devDependencies": {
-    "coveralls": "^3.0.9",
+    "@babel/cli": "^7.14.5",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-decorators": "^7.12.12",
+    "@babel/plugin-transform-modules-commonjs": "^7.14.5",
+    "@babel/preset-env": "^7.12.11",
     "eslint": "^6.7.2",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^6.2.2",
-    "nyc": "^15.0.0"
+    "jest": "^26.6.3"
   }
 }

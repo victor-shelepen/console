@@ -1,5 +1,4 @@
-const { buildWeightFieldSortChecker } = require('../src/lib')
-const assert = require('assert')
+import { buildWeightFieldSortChecker } from '../src/lib'
 
 describe('Lib', () => {
   describe('Weight name sort checker', () => {
@@ -10,11 +9,11 @@ describe('Lib', () => {
       const b = { name: 'apple', weight: 21 }
       const c = { name: 'zerro', weight: 21}
       let result = checker(a, b)
-      assert.equal(result, -1)
+      expect(result).toBe(-1)
       result = checker(b, a)
-      assert.equal(result, 1)
+      expect(result).toBe(1)
       result = checker(b, c)
-      assert.equal(result, -1)
+      expect(result).toBe(-1)
     })
 
     it('Without weights', () => {
@@ -22,11 +21,11 @@ describe('Lib', () => {
       const b = { name: 'apple' }
       const c = { name: 'apple' }
       let result = checker(a, b)
-      assert.equal(result, 1)
+      expect(result).toBe(1)
       result = checker(b, a)
-      assert.equal(result, -1)
+      expect(result).toBe(-1)
       result = checker(b, c)
-      assert.equal(result, 0)
+      expect(result).toBe(0)
     })
   })
 })

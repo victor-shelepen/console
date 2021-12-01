@@ -1,13 +1,13 @@
 const BRACKETS = ['"', '\'']
-const secretSpace = '#2909;'
+export const secretSpace = '#2909;'
 
-function replaceSecretSpaces(string) {
+export function replaceSecretSpaces(string) {
   const expression = new RegExp(secretSpace, 'g')
 
   return string.replace(expression, ' ')
 }
 
-function replaceSpacesInBrackets(string) {
+export function replaceSpacesInBrackets(string) {
   let openChar
   let chunks = []
   let chunk = []
@@ -32,14 +32,14 @@ function replaceSpacesInBrackets(string) {
   return chunks.join('')
 }
 
-function stringToTokens (string) {
+export function stringToTokens (string) {
   return replaceSpacesInBrackets(string)
     .replace(/\\ /gi, secretSpace)
     .split(' ')
     .filter(v => v != '')
 }
 
-function tokensToCommand (_tokens) {
+export function tokensToCommand (_tokens) {
   const tokens = [..._tokens]
   const argTokens = []
   const commandTokens = []
@@ -65,7 +65,7 @@ function tokensToCommand (_tokens) {
   }
 }
 
-function parseCommand (token) {
+export function parseCommand (token) {
   if (!token.match(/^[\w,.,]+$/g)) {
     throw new Error(`Command does not match to the command pattern - '${token}'.`)
   }
@@ -83,7 +83,7 @@ function parseCommand (token) {
   }
 }
 
-function parseArgument (token) {
+export function parseArgument (token) {
   let short = false
   if (token.substr(0, 2) === '--') {
     token = token.substr(2)
@@ -119,7 +119,7 @@ function parseArgument (token) {
   }
 }
 
-function extractValue (args, key, defaultVal=null) {
+export function extractValue (args, key, defaultVal=null) {
   if (!(args instanceof Array)) {
     return defaultVal
   }
@@ -134,20 +134,8 @@ function extractValue (args, key, defaultVal=null) {
   return arg.map(arg => arg.value)
 }
 
-function parse (str) {
+export function parse (str) {
   const tokens = stringToTokens(str)
 
   return tokensToCommand(tokens)
-}
-
-module.exports = {
-  secretSpace,
-  replaceSpacesInBrackets,
-  replaceSecretSpaces,
-  stringToTokens,
-  tokensToCommand,
-  extractValue,
-  parseCommand,
-  parseArgument,
-  parse
 }
